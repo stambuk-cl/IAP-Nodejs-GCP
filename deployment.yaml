@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    run: myapp
+  name: myapp
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      run: myapp
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: myapp
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: myapp
+        image: gcr.io/your-image/version:latest
+        imagePullPolicy: Always
+        resources: {}
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: myapp
+  name: myapp
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    run: myapp
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer: {}
